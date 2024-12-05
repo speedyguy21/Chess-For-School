@@ -181,6 +181,11 @@ class Piece {
                     }
                 }
 
+                for (let i = 0; i < pieces.length; i++) {
+                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "pawn") {
+                        pieces[i].deleteSelf();
+                    }
+                }
 
                 this.selected = false;
                 selectedPiece = null;
@@ -188,7 +193,7 @@ class Piece {
                 this.targetPosition.x = this.x;
                 this.targetPosition.y = this.y;
 
-                if (turn == "white") {
+                if (turn == "white" && (this.x != this.previousX || this.y != this.previousY)) {
                     turn = "black"
                 } else {
                     turn = "white";
@@ -480,10 +485,10 @@ function checkTakesPawn(pawn, target) {
             }
 
             if (targetPiece.color == "black") {
-                if (targetPiece.type == "king") {
+                if (targetPiece.type == "king" || kingMoving) {
                     return true;
                 }
-                targetPiece.deleteSelf();
+                //targetPiece.deleteSelf();
                 return true;
             }
         }
@@ -498,10 +503,10 @@ function checkTakesPawn(pawn, target) {
             }
 
             if (targetPiece.color == "white") {
-                if (targetPiece.type == "king") {
+                if (targetPiece.type == "king" || kingMoving) {
                     return true;
                 }
-                targetPiece.deleteSelf();
+                //targetPiece.deleteSelf();
                 return true;
             }
         }
@@ -993,9 +998,11 @@ function isCheck(king, target) {
     for (let i = 0; i < pieces.length; i++) {
         if (pieces[i].color != king.color && pieces[i].type != "king") {
             if (pieces[i].type == "pawn") {
+                kingMoving = true;
                 if (checkTakesPawn(pieces[i], target)) {
                     return true;
                 }
+                kingMoving = false;
             } else if (pieces[i].checkPossibleMoves(target)) {
                 return true;
             }
