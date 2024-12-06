@@ -39,6 +39,8 @@ let shortRookWhite = null;
 
 let checkmateNow = false;
 
+let canTake = true;
+
 /*
 let whiteKing = null;
 let blackKing = null;
@@ -187,6 +189,18 @@ class Piece {
                     }
                 }
 
+                for (let i = 0; i < pieces.length; i++) {
+                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "bishop") {
+                        pieces[i].deleteSelf();
+                    }
+                }
+
+                for (let i = 0; i < pieces.length; i++) {
+                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "king") {
+                        pieces[i].deleteSelf();
+                    }
+                }
+                
                 this.selected = false;
                 selectedPiece = null;
 
@@ -654,14 +668,14 @@ function checkMovesBishop(bishop, target) {
         return false;
     }
 
-    const targetPiece = getPieceAtPosition(thisTargetPosition);
+    const targetPiece = getPieceAtPosition({x: bishop.targetPosition.x, y: bishop.targetPosition.y});
     
     if (targetPiece != "empty") {
         if (targetPiece.color != bishop.color) {  
             if (targetPiece.type == "king" || checkingCastle) {
                 return true;
-            } 
-            targetPiece.deleteSelf();
+            }
+            
         } else {
             targetPiece.protected = true;
             return false;
@@ -780,7 +794,9 @@ function checkMovesKing(king, target) {
             if (targetPiece.protected) {
                 return false;
             } else {
-                targetPiece.deleteSelf();
+                if (!checkingCastle && canTake) {
+                    //targetPiece.deleteSelf();
+                }
             }
         } else {
             targetPiece.protected = true;
@@ -834,6 +850,7 @@ function canBlock(king) {
             if (piece.type != "king") {
                 for (let x = 1; x < 9; x++) {
                     for (let y = 1; y < 9; y++) {
+                        canTake = false;
                         if (piece.checkPossibleMoves({x: x, y: x})) {
                                 piece.previousX = x;
                                 piece.previousY = y;
@@ -875,8 +892,9 @@ function canBlock(king) {
                                         piece.y = piece.previousY;
                                         return true;
                                     }
-                                } 
+                                }
                         }
+                        canTake = true;
                     }
                 }
             }
