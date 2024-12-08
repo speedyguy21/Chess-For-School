@@ -867,7 +867,7 @@ function canBlock(king) {
                 for (let x = 1; x < 9; x++) {
                     for (let y = 1; y < 9; y++) {
                         kingMoving = false;
-                        if (piece.checkPossibleMoves({x: x, y: x})) {
+                        if (piece.checkPossibleMoves({x: x, y: y})) {
                                 piece.previousX = x;
                                 piece.previousY = y;
                                 piece.x = x;
