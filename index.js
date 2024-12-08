@@ -1,5 +1,6 @@
 const gameOverWindow = document.getElementById("win-holder");
 gameOverWindow.style.display = "none";
+const playAgainButton = document.getElementById("play-again");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -183,11 +184,11 @@ class Piece {
                     }
                 }
 
-                for (let i = 0; i < pieces.length; i++) {
+                /*(for (let i = 0; i < pieces.length; i++) {
                     if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "pawn") {
                         pieces[i].deleteSelf();
                     }
-                }
+                }*/
 
                 for (let i = 0; i < pieces.length; i++) {
                     if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "bishop") {
@@ -197,6 +198,12 @@ class Piece {
 
                 for (let i = 0; i < pieces.length; i++) {
                     if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "king") {
+                        pieces[i].deleteSelf();
+                    }
+                }
+
+                for (let i = 0; i < pieces.length; i++) {
+                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "knight") {
                         pieces[i].deleteSelf();
                     }
                 }
@@ -491,19 +498,23 @@ function checkMovesPawn(pawn, target) {
 function checkTakesPawn(pawn, target) {
     const targetPiece = getPieceAtPosition(target);
 
+    if (targetPiece == "empty")  {
+        return false;
+    }
+
     if (pawn.color == "white") {
         if ((target.x == pawn.x - 1 || target.x == pawn.x + 1) && target.y == pawn.y - 1) {
-            if (kingMoving) {
-                targetPiece.protected = true;
-                return true;
-            }
-
             if (targetPiece.color == "black") {
                 if (targetPiece.type == "king" || kingMoving) {
                     return true;
                 }
-                //targetPiece.deleteSelf();
+                targetPiece.deleteSelf();
                 return true;
+            } else {
+                if (kingMoving) {
+                    targetPiece.protected = true;
+                    return true;
+                }
             }
         }
     }
@@ -520,8 +531,13 @@ function checkTakesPawn(pawn, target) {
                 if (targetPiece.type == "king" || kingMoving) {
                     return true;
                 }
-                //targetPiece.deleteSelf();
+                targetPiece.deleteSelf();
                 return true;
+            } else {
+                if (kingMoving) {
+                    targetPiece.protected = true;
+                    return true;
+                }
             }
         }
     }
@@ -539,7 +555,7 @@ function checkMovesKnight(knight, target) {
                 if (targetPiece.type == "king") {
                     return true;
                 }
-                targetPiece.deleteSelf();
+                //targetPiece.deleteSelf();
             } else {
                 targetPiece.protected = true;
                 return false;
@@ -555,7 +571,7 @@ function checkMovesKnight(knight, target) {
                 if (targetPiece.type == "king") {
                     return true;
                 }
-                targetPiece.deleteSelf();
+                //targetPiece.deleteSelf();
             } else {
                 targetPiece.protected = true;
                 return false;
@@ -845,12 +861,12 @@ function canKingMoveAtAll(king) {
 
 function canBlock(king) {
     for (let i = 0; i < pieces.length; i++) {
-        piece = pieces[i];
+        let piece = pieces[i];
         if (king.color == piece.color) {
             if (piece.type != "king") {
                 for (let x = 1; x < 9; x++) {
                     for (let y = 1; y < 9; y++) {
-                        canTake = false;
+                        kingMoving = false;
                         if (piece.checkPossibleMoves({x: x, y: x})) {
                                 piece.previousX = x;
                                 piece.previousY = y;
@@ -861,14 +877,14 @@ function canBlock(king) {
                                     let targetPiece = pieces[i];
                 
                                     if (targetPiece.type == "king") {
-                                        kingMoving = true;
+                                        //kingMoving = true;
                                         if (targetPiece.color == "white") {
                                             whiteCheck = isCheck(targetPiece, {x: targetPiece.x, y: targetPiece.y});
                                         }
                                         if (targetPiece.color == "black") {
                                             blackCheck = isCheck(targetPiece, {x: targetPiece.x, y: targetPiece.y});
                                         }
-                                        kingMoving = false;
+                                        //kingMoving = false;
                                     }
                                 }
                 
@@ -894,7 +910,6 @@ function canBlock(king) {
                                     }
                                 }
                         }
-                        canTake = true;
                     }
                 }
             }
@@ -1065,7 +1080,7 @@ function spawnPieces() {
     longRookWhite = new Piece(1, 8, "rook", "white", sourceImages[7]);
     shortRookWhite = new Piece(8, 8, "rook", "white", sourceImages[7]);
     new Piece(2, 8, "knight", "white", sourceImages[3]);
-    new Piece(7, 8, "knight", "white", sourceImages[3]);
+    new Piece(4, 4, "knight", "white", sourceImages[3]);
     new Piece(3, 8, "bishop", "white", sourceImages[5]);
     new Piece(6, 8, "bishop", "white", sourceImages[5]);
     new Piece(4, 8, "queen", "white", sourceImages[9]);
@@ -1078,6 +1093,9 @@ function mainLoop() {
     moveLoop();
     drawLoop();
     requestAnimationFrame(mainLoop);
+    if (checkmateNow) {
+        return;
+    }
 }
 
 function moveLoop() {
@@ -1194,4 +1212,50 @@ window.addEventListener("click", function(e) {
     }
 });
 
-window.requestAnimationFrame(mainLoop);
+playAgainButton.addEventListener("click", function() {
+    let turn = "white";
+
+    mouseX = 0;
+    mouseY = 0;
+    mouseBoardX = 0;
+    mouseBoardY = 0;
+
+    whitePieces = [];
+    blackPieces = [];
+    pieces = [];
+
+    sourceImages = [];
+
+    selectedPiece = null;
+    kingMoving = false;
+
+    interval = 100;
+    sizeInterval = 100;
+
+    targetPiece = "empty";
+
+    blackCheck = false;
+    whiteCheck = false;
+
+    checkingCastle = false;
+
+    whiteCastle = {short: true, long: true};
+    blackCastle = {short: true, long: true};
+
+    longRookBlack = null;
+    shortRookBlack = null;
+    longRookWhite = null;
+    shortRookWhite = null;
+
+    checkmateNow = false;
+
+    canTake = true;
+
+    gameOverWindow.style.display = "none";
+
+    loadImages();
+
+    spawnPieces();
+
+    mainLoop();
+});
