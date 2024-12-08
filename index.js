@@ -184,11 +184,11 @@ class Piece {
                     }
                 }
 
-                /*(for (let i = 0; i < pieces.length; i++) {
+                for (let i = 0; i < pieces.length; i++) {
                     if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "pawn") {
                         pieces[i].deleteSelf();
                     }
-                }*/
+                }
 
                 for (let i = 0; i < pieces.length; i++) {
                     if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "bishop") {
