@@ -158,14 +158,11 @@ class Piece {
                         kingMoving = true;
                         if (piece.color == "white") {
                             whiteCheck = isCheck(piece, {x: piece.x, y: piece.y});
-
-                            if (whiteCheck) {
-                                console.log(canKingMoveAtAll(piece))
-                            }
                         }
                         if (piece.color == "black") {
                             blackCheck = isCheck(piece, {x: piece.x, y: piece.y});
                         }
+                        console.log(blackCheck);
                         kingMoving = false;
                     }
                 }
@@ -174,6 +171,9 @@ class Piece {
                     if (whiteCheck) {
                         this.x = this.previousX;
                         this.y = this.previousY;
+                    } else {
+                        this.selected = false;
+                        selectedPiece = null;
                     }
                 }
 
@@ -181,43 +181,28 @@ class Piece {
                     if (blackCheck) {
                         this.x = this.previousX;
                         this.y = this.previousY;
+                    } else {
+                        this.selected = false;
+                        selectedPiece = null;
                     }
                 }
 
                 for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "pawn") {
+                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this) {
                         pieces[i].deleteSelf();
                     }
                 }
 
-                for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "bishop") {
-                        pieces[i].deleteSelf();
-                    }
-                }
-
-                for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "king") {
-                        pieces[i].deleteSelf();
-                    }
-                }
-
-                for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this && this.type == "knight") {
-                        pieces[i].deleteSelf();
-                    }
-                }
-                
-                this.selected = false;
-                selectedPiece = null;
 
                 this.targetPosition.x = this.x;
                 this.targetPosition.y = this.y;
 
-                if (turn == "white" && (this.x != this.previousX || this.y != this.previousY)) {
-                    turn = "black"
-                } else {
-                    turn = "white";
+                if (this.x != this.previousX || this.y != this.previousY) {
+                    if (turn == "white") {
+                        turn = "black";
+                    } else {
+                        turn = "white";
+                    }
                 }
 
                 moveToPosition(this, {x: this.targetPosition.x *squareWidth - squareWidth/2, y: this.targetPosition.y*squareWidth - squareWidth/2}, 200);
@@ -633,7 +618,7 @@ function checkMovesRook(rook, target) {
             if (targetPiece.type == "king") {
                 return true;
             }
-            targetPiece.deleteSelf();
+            //targetPiece.deleteSelf();
         } else {
             targetPiece.protected = true;
             return false;
@@ -644,61 +629,61 @@ function checkMovesRook(rook, target) {
 }
 
 function checkMovesBishop(bishop, target) {
-    let thisTargetPosition = {x: target.x, y: target.y};
-
     const protectedPieces = [];
 
-    if (Math.abs(target.x - bishop.x) !== Math.abs(target.y - bishop.y)) {
-        return false;
-    }
+    let thisTargetPosition = {x: target.x, y: target.y};
 
-    const isPathClear = (startX, startY, endX, endY) => {
-        const xIncrement = startX < endX ? 1 : -1;
-        const yIncrement = startY < endY ? 1 : -1;
-        let x = startX + xIncrement;
-        let y = startY + yIncrement;
-
-        let loopTimes = 0;
-
-        while (x !== endX && y !== endY && loopTimes < 50) {
-            const pos = { x: x, y: y };
-            const pieceAtPos = getPieceAtPosition(pos);
-            if (pieceAtPos != "empty") {
-                if (pieceAtPos.color == bishop.color) {
-                    protectedPieces.push(pieceAtPos);
-                    pieceAtPos.protected = true;
-                    return false;
-                } else {
-                    return false;
+    const targetPiece = getPieceAtPosition(thisTargetPosition);
+    
+    if (!(Math.abs(target.x - bishop.x) !== Math.abs(target.y - bishop.y))) {
+        const isBishopPathClear = (startX, startY, endX, endY) => {
+            const xIncrement = startX < endX ? 1 : -1;
+            const yIncrement = startY < endY ? 1 : -1;
+            let x = startX + xIncrement;
+            let y = startY + yIncrement;
+    
+            let loopTimes = 0;
+    
+            while (x !== endX && y !== endY && loopTimes < 50) {
+                const pos = { x: x, y: y };
+                const pieceAtPos = getPieceAtPosition(pos);
+                if (pieceAtPos != "empty") {
+                    if (pieceAtPos.color == bishop.color) {
+                        protectedPieces.push(pieceAtPos);
+                        pieceAtPos.protected = true;
+                        return false;
+                    } else {
+                        return false;
+                    }
                 }
+                x += xIncrement;
+                y += yIncrement;
+                loopTimes++;
             }
-            x += xIncrement;
-            y += yIncrement;
-            loopTimes++;
+    
+            return true;
+        };
+    
+        if (!isBishopPathClear(bishop.x, bishop.y, target.x, target.y)) {
+            return false;
+        }
+        
+        if (targetPiece != "empty") {
+            if (targetPiece.color != bishop.color) {  
+                if (targetPiece.type == "king" || checkingCastle) {
+                    return true;
+                } 
+                //targetPiece.deleteSelf();
+            } else {
+                targetPiece.protected = true;
+                return false;
+            }
         }
 
         return true;
-    };
-
-    if (!isPathClear(bishop.x, bishop.y, target.x, target.y)) {
-        return false;
     }
-
-    const targetPiece = getPieceAtPosition({x: bishop.targetPosition.x, y: bishop.targetPosition.y});
     
-    if (targetPiece != "empty") {
-        if (targetPiece.color != bishop.color) {  
-            if (targetPiece.type == "king" || checkingCastle) {
-                return true;
-            }
-            
-        } else {
-            targetPiece.protected = true;
-            return false;
-        }
-    }
-
-    return true;
+    return false;
 }
 
 function checkMovesKing(king, target) {
@@ -860,64 +845,78 @@ function canKingMoveAtAll(king) {
 }
 
 function canBlock(king) {
+    //console.log("Checking if can block for", king.color);
     for (let i = 0; i < pieces.length; i++) {
         let piece = pieces[i];
         if (king.color == piece.color) {
+            if (piece.type == "pawn") {
+                let moveY = piece.color === "black" ? piece.y + 1 : piece.y - 1;
+                let captureMoves = [
+                    {x: piece.x - 1, y: moveY},
+                    {x: piece.x + 1, y: moveY}
+                ];
+
+                for (let move of captureMoves) {
+                    let targetPiece = getPieceAtPosition(move);
+                    if (targetPiece !== "empty" && targetPiece.color !== piece.color) {
+                        let originalX = piece.x;
+                        let originalY = piece.y;
+                        let targetOriginalX = targetPiece.x;
+                        let targetOriginalY = targetPiece.y;
+
+                        piece.x = move.x;
+                        piece.y = move.y;
+                        targetPiece.x = -1; 
+                        targetPiece.y = -1;
+
+                        let stillInCheck = isCheck(king, {x: king.x, y: king.y});
+
+                        piece.x = originalX;
+                        piece.y = originalY;
+                        targetPiece.x = targetOriginalX;
+                        targetPiece.y = targetOriginalY;
+
+                        if (!stillInCheck) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
             if (piece.type != "king") {
+                //console.log("Checking moves for", piece.type);
                 for (let x = 1; x < 9; x++) {
                     for (let y = 1; y < 9; y++) {
-                        kingMoving = false;
+                        kingMoving = true;
+                        
                         if (piece.checkPossibleMoves({x: x, y: y})) {
-                                piece.previousX = x;
-                                piece.previousY = y;
-                                piece.x = x;
-                                piece.y = y;
-                
-                                for (let i = 0; i < pieces.length; i++) {
-                                    let targetPiece = pieces[i];
-                
-                                    if (targetPiece.type == "king") {
-                                        //kingMoving = true;
-                                        if (targetPiece.color == "white") {
-                                            whiteCheck = isCheck(targetPiece, {x: targetPiece.x, y: targetPiece.y});
-                                        }
-                                        if (targetPiece.color == "black") {
-                                            blackCheck = isCheck(targetPiece, {x: targetPiece.x, y: targetPiece.y});
-                                        }
-                                        //kingMoving = false;
-                                    }
-                                }
-                
-                                if (piece.color == "white") {
-                                    if (whiteCheck) {
-                                        piece.x = piece.previousX;
-                                        piece.y = piece.previousY;
-                                    } else {
-                                        piece.x = piece.previousX;
-                                        piece.y = piece.previousY;
-                                        return true;
-                                    }
-                                } 
-                
-                                if (piece.color == "black") {
-                                    if (blackCheck) {
-                                        piece.x = piece.previousX;
-                                        piece.y = piece.previousY;
-                                    } else {
-                                        piece.x = piece.previousX;
-                                        piece.y = piece.previousY;
-                                        return true;
-                                    }
-                                }
+                            //console.log("Found possible move for", piece.type, "to", x, y);
+                            
+                            let originalX = piece.x;
+                            let originalY = piece.y;
+                            piece.x = x;
+                            piece.y = y;
+                            
+                            let stillInCheck = isCheck(king, {x: king.x, y: king.y});
+                            //console.log("After move, still in check?", stillInCheck);
+                            
+                            piece.x = originalX;
+                            piece.y = originalY;
+                            
+                            if (!stillInCheck) {
+                                kingMoving = false;
+                                return true;
+                            }
                         }
                     }
                 }
             }
         }
     }
-
+    kingMoving = false;
     return false;
 }
+
 
 function checkMovesQueen(queen, target) {
     const protectedPieces = [];
@@ -964,7 +963,7 @@ function checkMovesQueen(queen, target) {
                 if (targetPiece.type == "king" || checkingCastle) {
                     return true;
                 } 
-                targetPiece.deleteSelf();
+                //targetPiece.deleteSelf();
             } else {
                 targetPiece.protected = true;
                 return false;
@@ -1012,7 +1011,7 @@ function checkMovesQueen(queen, target) {
                 if (targetPiece.type == "king" || checkingCastle) {
                     return true;
                 } 
-                targetPiece.deleteSelf();
+                //targetPiece.deleteSelf();
             } else {
                 targetPiece.protected = true;
                 return false;
@@ -1028,24 +1027,59 @@ function isCheck(king, target) {
     let originalSelected = kingMoving;
     kingMoving = true;
 
+    let tempPieces = pieces.map(piece => ({
+        piece: piece,
+        x: piece.x,
+        y: piece.y
+    }));
+
+    let kingOriginalX = king.x;
+    let kingOriginalY = king.y;
+    if (target.x !== king.x || target.y !== king.y) {
+        king.x = target.x;
+        king.y = target.y;
+    }
+
+    let inCheck = false;
+
     for (let i = 0; i < pieces.length; i++) {
         if (pieces[i].color != king.color && pieces[i].type != "king") {
             if (pieces[i].type == "pawn") {
                 kingMoving = true;
                 if (checkTakesPawn(pieces[i], target)) {
-                    return true;
+                    inCheck = true;
+                    break;
                 }
-                kingMoving = false;
             } else if (pieces[i].checkPossibleMoves(target)) {
-                return true;
+                inCheck = true;
+                break;
             }
         }
     }
 
+    tempPieces.forEach(temp => {
+        temp.piece.x = temp.x;
+        temp.piece.y = temp.y;
+    });
+
+    king.x = kingOriginalX;
+    king.y = kingOriginalY;
+
     kingMoving = originalSelected;
 
-    return false;
+    return inCheck;
 }
+
+function getPieceAtPosition(target) {
+    for (let i = 0; i < pieces.length; i++) {
+        if (target.x == pieces[i].x && target.y == pieces[i].y) {
+            return pieces[i];
+        }
+    }
+
+    return "empty";
+}
+
 
 function getPieceAtPosition(target) {
     for (let i = 0; i < pieces.length; i++) {
@@ -1080,7 +1114,7 @@ function spawnPieces() {
     longRookWhite = new Piece(1, 8, "rook", "white", sourceImages[7]);
     shortRookWhite = new Piece(8, 8, "rook", "white", sourceImages[7]);
     new Piece(2, 8, "knight", "white", sourceImages[3]);
-    new Piece(4, 4, "knight", "white", sourceImages[3]);
+    new Piece(7, 8, "knight", "white", sourceImages[3]);
     new Piece(3, 8, "bishop", "white", sourceImages[5]);
     new Piece(6, 8, "bishop", "white", sourceImages[5]);
     new Piece(4, 8, "queen", "white", sourceImages[9]);
@@ -1213,7 +1247,7 @@ window.addEventListener("click", function(e) {
 });
 
 playAgainButton.addEventListener("click", function() {
-    let turn = "white";
+    turn = "white";
 
     mouseX = 0;
     mouseY = 0;
