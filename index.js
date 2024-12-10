@@ -116,6 +116,7 @@ class Piece {
         this.sizeInterval = 0;
         this.previousX = this.x;
         this.previousY = this.y;
+        this.lastDeleted = null;
         this.waitTime = 0;
 
         this.drawX = this.x*squareWidth - squareWidth/2;
@@ -152,6 +153,13 @@ class Piece {
                 }
 
                 for (let i = 0; i < pieces.length; i++) {
+                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this) {
+                        this.lastDeleted = pieces[i];
+                        pieces[i].deleteSelf();
+                    }
+                }
+
+                for (let i = 0; i < pieces.length; i++) {
                     let piece = pieces[i];
 
                     if (piece.type == "king") {
@@ -171,6 +179,11 @@ class Piece {
                     if (whiteCheck) {
                         this.x = this.previousX;
                         this.y = this.previousY;
+                        
+                        if (this.lastDeleted != null) {
+                            pieces.push(this.lastDeleted);
+                            this.lastDeleted = null;
+                        }
                     } else {
                         this.selected = false;
                         selectedPiece = null;
@@ -181,15 +194,14 @@ class Piece {
                     if (blackCheck) {
                         this.x = this.previousX;
                         this.y = this.previousY;
+
+                        if (this.lastDeleted != null) {
+                            pieces.push(this.lastDeleted);
+                            this.lastDeleted = null;
+                        }
                     } else {
                         this.selected = false;
                         selectedPiece = null;
-                    }
-                }
-
-                for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].x == this.x && pieces[i].y == this.y && pieces[i] != this) {
-                        pieces[i].deleteSelf();
                     }
                 }
 
@@ -787,7 +799,9 @@ function checkMovesKing(king, target) {
     }*/
 
     if (isCheck(king, target)) {
-        return false;
+        if (targetPiece.x != target.x || targetPiece.y != target.y) {
+            return false;
+        }
     }
 
     if (targetPiece != "empty") {
