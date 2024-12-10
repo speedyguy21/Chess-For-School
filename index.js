@@ -701,7 +701,7 @@ function checkMovesBishop(bishop, target) {
 function checkMovesKing(king, target) {
     let thisTargetPosition = {x: target.x, y: target.y}
 
-    if (target.x <= 0 || target.y <= 0 || target.x > 8 || target.y > 8) {
+    if (target.x*squareWidth <= 0 || target.y*squareWidth <= 0 || target.x*squareWidth > 8 || target.y*squareWidth > 8) {
         return false;
     }
 
@@ -824,34 +824,49 @@ function checkMovesKing(king, target) {
 
 function canKingMoveAtAll(king) {
     if (checkMovesKing(king, {x: king.x + 1, y: king.y + 1})) {
+        console.log("Position: " + king.x + 1 + ", " + king.y + 1);
         return true;
     }
 
     if (checkMovesKing(king, {x: king.x+1, y: king.y})) {
+        console.log("Position: " + king.x + 1 + ", " + king.y);
+
         return true;
     }
 
     if (checkMovesKing(king, {x: king.x+1, y: king.y - 1})) {
+        console.log("Position: " + king.x + 1 + ", " + king.y - 1);
+
         return true;
     }
 
     if (checkMovesKing(king, {x: king.x, y: king.y + 1})) {
+        console.log("Position: " + king.x + ", " + king.y + 1);
+
         return true;
     }
     
     if (checkMovesKing(king, {x: king.x, y: king.y - 1})) {
+        console.log("Position: " + king.x + ", " + king.y - 1);
+
         return true;
     }
 
     if (checkMovesKing(king, {x: king.x-1, y: king.y + 1})) {
+        console.log("Position: " + king.x - 1 + ", " + king.y + 1);
+
         return true;
     }
 
     if (checkMovesKing(king, {x: king.x-1, y: king.y})) {
+        console.log("Position: " + king.x - 1 + ", " + king.y);
+
         return true;
     }
 
     if (checkMovesKing(king, {x: king.x - 1, y: king.y - 1})) {
+        console.log("Position: " + king.x - 1 + ", " + king.y - 1);
+
         return true;
     }
 
@@ -1130,8 +1145,8 @@ function spawnPieces() {
     new Piece(2, 8, "knight", "white", sourceImages[3]);
     new Piece(7, 8, "knight", "white", sourceImages[3]);
     new Piece(3, 8, "bishop", "white", sourceImages[5]);
-    new Piece(6, 8, "bishop", "white", sourceImages[5]);
-    new Piece(4, 8, "queen", "white", sourceImages[9]);
+    new Piece(3, 5, "bishop", "white", sourceImages[5]);
+    new Piece(8, 4, "queen", "white", sourceImages[9]);
     new Piece(5, 8, "king", "white", sourceImages[11]);
 }
 
@@ -1170,6 +1185,10 @@ function moveLoop() {
             }
             if (piece.color == "black") {
                 blackCastle = {short: canCastle(piece, false), long: canCastle(piece, true)}
+
+                if (blackCheck) {
+                    console.log(canKingMoveAtAll(piece)); 
+                }
 
                 if (!canKingMoveAtAll(piece) && blackCheck) {
                     if (!canBlock(piece)) {
