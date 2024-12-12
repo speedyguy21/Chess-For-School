@@ -769,49 +769,14 @@
             
             function checkMovesKing(king, target) {
             // Ensure the target is within the board limits
-            if (target.x * squareWidth < squareWidth || target.y * squareWidth < squareWidth || target.x * squareWidth > 8 * squareWidth || target.y * squareWidth > 8 * squareWidth) {
-            return false;
-            }
-            
-            // Get the piece at the target position
-            const targetPiece = getPieceAtPosition({x: target.x, y: target.y});
-            console.log(`King at ${king.x}, ${king.y} checking move to ${target.x}, ${target.y} with target piece:`, targetPiece);
-            
-            // Ensure the king's move is within one square
-            if (Math.abs(target.x - king.x) > 1 || Math.abs(target.y - king.y) > 1) {
-            return false;
-            }
-            
-            // Check if the target position is occupied by an enemy piece
-            if (targetPiece !== "empty" && targetPiece.color !== king.color) {
-            console.log(`King can capture ${targetPiece.type} at ${target.x}, ${target.y}`);
-            return true;
-            }
-            
-            // Ensure the target position is not occupied by a piece of the same color
-            if (targetPiece.color === king.color) {
-            return false;
-            }
-            
-            // Ensure the king is not moving into a check position
-            if (isCheck(king, target)) {
-            console.log(`King move to ${target.x}, ${target.y} would result in check`);
-            return false;
-            }
-            
-            return true;
-            }
-            
-            /*function checkMovesKing(king, target) {
-                return true;
-                let thisTargetPosition = {x: target.x, y: target.y}
-            
-                if (target.x*squareWidth <= 0 || target.y*squareWidth <= 0 || target.x*squareWidth > 8 || target.y*squareWidth > 8) {
+                if (target.x * squareWidth < squareWidth || target.y * squareWidth < squareWidth || target.x * squareWidth > 8 * squareWidth || target.y * squareWidth > 8 * squareWidth) {
                     return false;
                 }
             
-                const targetPiece = getPieceAtPosition(thisTargetPosition);
-            
+            // Get the piece at the target position
+                const targetPiece = getPieceAtPosition({x: target.x, y: target.y});
+                console.log(`King at ${king.x}, ${king.y} checking move to ${target.x}, ${target.y} with target piece:`, targetPiece);
+
                 if (targetPiece.type == "rook" && targetPiece.color == king.color) {
                     if (king.color == "white") {
                         if (targetPiece == shortRookWhite) {
@@ -876,56 +841,30 @@
                     }
                 }
             
-                for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].type == "king" && pieces[i].color != king.color && king.selected) {
-                        let otherKing = pieces[i];
-            
-                        if (Math.abs(otherKing.x - target.x) <= 1 && Math.abs(otherKing.y - target.y) <= 1) {
-                            return false;
-                        }
-                    }
-                }
-            
+            // Ensure the king's move is within one square
                 if (Math.abs(target.x - king.x) > 1 || Math.abs(target.y - king.y) > 1) {
                     return false;
                 }
             
-                for (let i = 0; i < pieces.length; i++) {
-                    pieces[i].protected = false;
+            // Check if the target position is occupied by an enemy piece
+                if (targetPiece !== "empty" && targetPiece.color !== king.color) {
+                console.log(`King can capture ${targetPiece.type} at ${target.x}, ${target.y}`);
+                    return true;
                 }
-                
             
-                /*for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].color != king.color && pieces[i].type != "king") {
-                        if (pieces[i].checkPossibleMoves(target)) {
-                            return false;
-                        }
-                    }
-                }*/
+            // Ensure the target position is not occupied by a piece of the same color
+                if (targetPiece.color === king.color) {
+                    return false;
+                }
             
-                /*if (isCheck(king, target)) {
-                    if (targetPiece.x != target.x || targetPiece.y != target.y) {
-                        return false;
-                    }
-                }*/ 
-            
-                /*if (targetPiece != "empty") {
-                    if (targetPiece.color != king.color) {
-                        if (targetPiece.protected) {
-                            return false;
-                        } else {
-                            if (!checkingCastle || canTake) {
-                                //targetPiece.deleteSelf();
-                            }
-                        }
-                    } else {
-                        targetPiece.protected = true;
-                        return false;
-                    }
+            // Ensure the king is not moving into a check position
+                if (isCheck(king, target)) {
+                console.log(`King move to ${target.x}, ${target.y} would result in check`);
+                    return false;
                 }
             
                 return true;
-            }*/
+            }
             
             function canKingMoveAtAll(king) {
                 if (checkMovesKing(king, {x: king.x + 1, y: king.y + 1})) {
@@ -1064,25 +1003,25 @@
             }*/
             
             function canBlock(king) {
-            for (let piece of pieces) {
-            if (king.color == piece.color) {
-                if (piece.type == "pawn") {
-                    console.log(`Checking pawn at ${piece.x}, ${piece.y}`);
-                    if (canCaptureToBlock(piece, king)) {
-                        return true;
-                    }
-                } else if (piece.type != "king") {
-                    console.log(`Checking ${piece.type} at ${piece.x}, ${piece.y}`);
-                    if (canMoveToBlock(piece, king)) {
-                        return true;
+                for (let piece of pieces) {
+                    if (king.color == piece.color) {
+                        if (piece.type == "pawn") {
+                            console.log(`Checking pawn at ${piece.x}, ${piece.y}`);
+                            if (canCaptureToBlock(piece, king)) {
+                                return true;
+                            }
+                        } else if (piece.type != "king") {
+                            console.log(`Checking ${piece.type} at ${piece.x}, ${piece.y}`);
+                            if (canMoveToBlock(piece, king)) {
+                                return true;
+                            }
+                        }
                     }
                 }
-            }
-            }
             
             // Add logic for the king to capture the threatening piece
             if (canKingCapture(king)) {
-            return true;
+                return true;
             }
             
             return false;
@@ -1096,29 +1035,29 @@
             ];
             
             for (let move of captureMoves) {
-            let targetPiece = getPieceAtPosition(move);
-            console.log(`Pawn at ${piece.x}, ${piece.y} checking capture move to ${move.x}, ${move.y} with target piece:`, targetPiece);
-            if (targetPiece !== "empty" && targetPiece.color !== piece.color) {
-                if (!isCheckAfterMove(piece, move, king)) {
-                    return true;
-                }
-            }
-            }
-            return false;
-            }
-            
-            function canMoveToBlock(piece, king) {
-            for (let x = 1; x < 9; x++) {
-            for (let y = 1; y < 9; y++) {
-                if (piece.checkPossibleMoves({x: x, y: y })) {
-                    console.log(`${piece.type} at ${piece.x}, ${piece.y} can move to ${x}, ${y}`);
-                    if (!isCheckAfterMove(piece, { x, y }, king)) {
+                let targetPiece = getPieceAtPosition(move);
+                console.log(`Pawn at ${piece.x}, ${piece.y} checking capture move   to ${move.x}, ${move.y} with target piece:`, targetPiece);
+                if (targetPiece !== "empty" && targetPiece.color !== piece.color) {
+                    if (!isCheckAfterMove(piece, move, king)) {
                         return true;
                     }
                 }
             }
+                return false;
             }
-            return false;
+            
+            function canMoveToBlock(piece, king) {
+                for (let x = 1; x < 9; x++) {
+                    for (let y = 1; y < 9; y++) {
+                        if (piece.checkPossibleMoves({x: x, y: y })) {
+                            console.log(`${piece.type} at ${piece.x}, ${piece.y} can move to ${x}, ${y}`);
+                        if (!isCheckAfterMove(piece, { x, y }, king)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+                return false;
             }
             
             function isCheckAfterMove(piece, move, king) {
@@ -1415,7 +1354,7 @@
                         if (piece.color == "white") {
                             whiteCastle = {short: canCastle(piece, false), long: canCastle(piece, true)}
             
-                            if (!canKingMoveAtAll(piece) && whiteCheck) {
+                            if (whiteCheck) {
                                 if (!canBlock(piece)) {
                                     checkmate("Black");
                                 }
@@ -1428,7 +1367,7 @@
                                 console.log(canBlock(piece)); 
                             }
             
-                            if (!canKingMoveAtAll(piece) && blackCheck) {
+                            if (blackCheck) {
                                 if (!canBlock(piece)) {
                                     checkmate("White");
                                 }
