@@ -1092,18 +1092,27 @@
             }
             
             function canKingCapture(king) {
-            let possibleMoves = getKingMoves(king);
-            for (let move of possibleMoves) {
-            let targetPiece = getPieceAtPosition(move);
-            console.log(`King checking move to ${move.x}, ${move.y} with target piece:`, targetPiece);
-            if (targetPiece !== "empty" && targetPiece.color !== king.color) {
-                if (!isCheckAfterMove(king, move, king)) {
-                    return true;
+                let possibleMoves = getKingMoves(king);
+                for (let move of possibleMoves) {
+                    let targetPiece = getPieceAtPosition(move);
+                    console.log(`King checking move to ${move.x}, ${move.y} with target piece:`, targetPiece);
+                    if (targetPiece !== "empty" && targetPiece.color !== king.color) {
+                        if (!isCheckAfterMove(king, move, king)) {
+                            return true;
+                        }
+                    }
                 }
-            }
-            }
-            return false;
-            }
+
+                possibleMoves = getKingMoves(king);
+                for (let move of possibleMoves) {
+                        if (!isCheckAfterMove(king, move, king)) {
+                            return true;
+                        }
+                    }
+                    return false;
+
+                }
+                
             
             function getKingMoves(king) {
             // Assume `getKingMoves` returns all valid moves for the king
