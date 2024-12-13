@@ -6,68 +6,78 @@
         <title>Chess</title>
         <style>
             html {
-            width: 100%;
-            height: 100%;
-            background: #cea475;
+                width: 100%;
+                height: 100%;
+                background: #cea475;
             }
             canvas {
-            width: 700px;
-            height: 700px;
-            border-radius: 25px;
-            border: 5px solid rgb(107, 72, 45);
-            background: #c58c4c;
+                width: 700px;
+                height: 700px;
+                border-radius: 25px;
+                border: 5px solid rgb(107, 72, 45);
+                background: #c58c4c;
             }
             .win-holder {
-            position: fixed;
-            top: 20%;
-            left: 38%;
-            width: 25%;
-            height: 25%;
-            z-index: 5;
+                position: fixed;
+                top: 20%;
+                left: 38%;
+                width: 25%;
+                height: 25%;
+                z-index: 5;
             }
             .win {
-            background-color: white;
-            width: 100%; height: 100%;
-            border-radius: 30px;
+                background-color: white;
+                width: 100%; height: 100%;
+                border-radius: 30px;
             }
             #win-text {
-            font-family: "Arial";
-            padding-top: 50px;
+                font-family: "Arial";
+                padding-top: 50px;
             }
             #play-again {
-            width: 85%;
-            height: 25%;
-            margin-top: 15%;
-            border-radius: 30px;
-            background-color: black;
-            color: white;
-            font-size: 35px;
-            transition: 0.2s ease-in;
+                width: 85%;
+                height: 25%;
+                margin-top: 15%;
+                border-radius: 30px;
+                background-color: black;
+                color: white;
+                font-size: 35px;
+                transition: 0.2s ease-in;
             }
             #play-again:hover {
-            transform: scale(1.05);
-            cursor: pointer;
-            transition: 0.2s ease-in-out;
+                transform: scale(1.05);
+                cursor: pointer;
+                transition: 0.2s ease-in-out;
             }
             #title {
-            font-family: "Arial";
+                font-family: "Arial";
+            }
+            #game-link {
+                text-decoration: none;
+                color: black;
+                font-family: "Arial";
             }
         </style>
     </head>
     <body>
-        <div align="center">
-            <canvas id="canvas"></canvas>
-        </div>
-        <div id="win-holder" class="win-holder" align="center">
-            <div class="win" align="center">
-                <h1 id="win-text">YAYAYAYAYAY</h1>
-                <button id="play-again">Play again</button>
+        <div align="center" class="main-holder"</div>
+            <div align="center">
+                <canvas id="canvas"></canvas>
+            </div>
+            <div id="win-holder" class="win-holder" align="center">
+                <div class="win" align="center">
+                    <h1 id="win-text">YAYAYAYAYAY</h1>
+                    <button id="play-again">Play again</button>
+                </div>
+            </div>
+            <div class="title-holder" align="center">
+                <h1 id="title">Chess</h1>
+                <a id="game-link" href="https://github.com/speedyguy21/Chess-For-School"><u>View this project on GitHub</u></a>
+                <h1 id="turn-shower"> Blank to move</h1>
             </div>
         </div>
-        <div class="title-holder" align="center">
-            <h1 id="title">Chess</h1>
-        </div>
-        <script>const gameOverWindow = document.getElementById("win-holder");
+        <script>
+            const gameOverWindow = document.getElementById("win-holder");
             gameOverWindow.style.display = "none";
             const playAgainButton = document.getElementById("play-again");
             const canvas = document.getElementById("canvas");
@@ -1311,11 +1321,6 @@
                     let piece = new Piece(i, 2, "pawn", "black", sourceImages[0]);
                     piece = new Piece(i, 7, "pawn", "white", sourceImages[1]);
                 }
-                
-                //new Piece(5, 6, "king", "white", sourceImages[11]);
-                //new Piece(4, 5, "pawn", "white", sourceImages[1]);
-                //new Piece(3, 4, "bishop", "black", sourceImages[4]);
-            
             
                 longRookBlack = new Piece(1, 1, "rook", "black", sourceImages[6]);
                 shortRookBlack = new Piece(8, 1, "rook", "black", sourceImages[6]);
@@ -1431,7 +1436,7 @@
                 console.log(whiteCastle);
             
                 if (interval > 50) {
-                    console.log(mouseX);
+                    console.log(e.clientX);
                 
                     mouseBoardX = (mouseX/squareWidth)+1;
                     mouseBoardY = (mouseY/squareWidth)+1;
