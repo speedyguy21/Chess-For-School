@@ -584,7 +584,7 @@
                             if (targetPiece.type == "king" || kingMoving) {
                                 return true;
                             }
-                            targetPiece.deleteSelf();
+                            //targetPiece.deleteSelf();
                             return true;
                         } else {
                             if (kingMoving) {
@@ -607,7 +607,7 @@
                             if (targetPiece.type == "king" || kingMoving) {
                                 return true;
                             }
-                            targetPiece.deleteSelf();
+                            //targetPiece.deleteSelf();
                             return true;
                         } else {
                             if (kingMoving) {
@@ -1030,29 +1030,30 @@
                 }
             
             // Add logic for the king to capture the threatening piece
-            if (canKingCapture(king)) {
-                return true;
-            }
+                if (canKingCapture(king)) {
+                    return true;
+                }
             
-            return false;
+                return false;
             }
             
             function canCaptureToBlock(piece, king) {
-            let moveY = piece.color === "black" ? piece.y + 1 : piece.y - 1;
-            let captureMoves = [
-            { x: piece.x - 1, y: moveY },
-            { x: piece.x + 1, y: moveY }
-            ];
+                let moveY = piece.color === "black" ? piece.y + 1 : piece.y - 1;
+                let captureMoves = [
+                    { x: piece.x - 1, y: moveY },
+                    { x: piece.x + 1, y: moveY }
+                ];
             
-            for (let move of captureMoves) {
-                let targetPiece = getPieceAtPosition(move);
-                console.log(`Pawn at ${piece.x}, ${piece.y} checking capture move   to ${move.x}, ${move.y} with target piece:`, targetPiece);
-                if (targetPiece !== "empty" && targetPiece.color !== piece.color) {
-                    if (!isCheckAfterMove(piece, move, king)) {
-                        return true;
+                for (let move of captureMoves) {
+                    let targetPiece = getPieceAtPosition(move);
+                    console.log(`Pawn at ${piece.x}, ${piece.y} checking capture move   to ${move.x}, ${move.y} with target piece:`, targetPiece);
+                    if (targetPiece !== "empty" && targetPiece.color !== piece.color) {
+                        if (!isCheckAfterMove(piece, move, king)) {
+                            return true;
+                        }
                     }
                 }
-            }
+
                 return false;
             }
             
@@ -1071,34 +1072,34 @@
             }
             
             function isCheckAfterMove(piece, move, king) {
-            let originalX = piece.x;
-            let originalY = piece.y;
-            let lastDeleted = null;
+                let originalX = piece.x;
+                let originalY = piece.y;
+                let lastDeleted = null;
             
-            piece.x = move.x;
-            piece.y = move.y;
+                piece.x = move.x;
+                piece.y = move.y;
             
-            console.log(`Moved ${piece.type} to ${move.x}, ${move.y}`);
-            for (let i = 0; i < pieces.length; i++) {
-                                if (pieces[i].x == piece.x && pieces[i].y == piece.y && pieces[i] != piece) {
-                                    lastDeleted = pieces[i];
-                                    pieces[i].deleteSelf();
-                                }
-                            }
+                console.log(`Moved ${piece.type} to ${move.x}, ${move.y}`);
+                for (let i = 0; i < pieces.length; i++) {
+                    if (pieces[i].x == piece.x && pieces[i].y == piece.y && pieces[i] != piece) {
+                        lastDeleted = pieces[i];
+                        pieces[i].deleteSelf();
+                    }
+                }
             
-            let stillInCheck = isCheck(king, { x: king.x, y: king.y });
+                let stillInCheck = isCheck(king, { x: king.x, y: king.y });
             
-            if (lastDeleted != null) {
-            pieces.push(lastDeleted);
-            }
+                if (lastDeleted != null) {
+                    pieces.push(lastDeleted);
+                }
             
-            piece.x = originalX;
-            piece.y = originalY;
+                piece.x = originalX;
+                piece.y = originalY;
             
-            console.log(`Reverted ${piece.type} back to ${originalX}, ${originalY}`);
-            console.log(`Still in check after move: ${stillInCheck}`);
+                console.log(`Reverted ${piece.type} back to ${originalX}, ${originalY}`);
+               console.log(`Still in check after move: ${stillInCheck}`);
             
-            return stillInCheck;
+                return stillInCheck;
             }
             
             function canKingCapture(king) {
@@ -1129,19 +1130,16 @@
             // This function should return an array of positions the king can move to
             // including capturing opposing pieces
             return [
-            { x: king.x - 1, y: king.y - 1 },
-            { x: king.x, y: king.y - 1 },
-            { x: king.x + 1, y: king.y - 1 },
-            { x: king.x - 1, y: king.y },
-            { x: king.x + 1, y: king.y },
-            { x: king.x - 1, y: king.y + 1 },
-            { x: king.x, y: king.y + 1 },
-            { x: king.x + 1, y: king.y + 1 }
-            ];
+                { x: king.x - 1, y: king.y - 1 },
+                { x: king.x, y: king.y - 1 },
+                { x: king.x + 1, y: king.y - 1 },
+                { x: king.x - 1, y: king.y },
+                { x: king.x + 1, y: king.y },
+                { x: king.x - 1, y: king.y + 1 },
+                { x: king.x, y: king.y + 1 },
+                { x: king.x + 1, y: king.y + 1 }
+                ];
             }
-            
-            
-            
             
             function checkMovesQueen(queen, target) {
                 const protectedPieces = [];
@@ -1364,6 +1362,7 @@
                     let piece = pieces[i];
                     
                     kingMoving = true;
+                
                     if (piece.type == "king") {
                         if (piece.color == "white") {
                             whiteCastle = {short: canCastle(piece, false), long: canCastle(piece, true)}
@@ -1501,7 +1500,7 @@
                 blackCastle = {short: true, long: true};
             
                 longRookBlack = null;
-                shortRookBlack = null;
+                shortRookBlack = null
                 longRookWhite = null;
                 shortRookWhite = null;
             
