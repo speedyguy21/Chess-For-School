@@ -287,6 +287,20 @@
             
                             this.targetPosition.x = this.x;
                             this.targetPosition.y = this.y;
+
+                            if (this.type === "pawn" && this.y == 1 || this.y == 8) {
+                                this.type = "queen";
+                                
+                                if (this.color == "black") {
+                                    this.img = sourceImages[8];
+                                    this.image = document.createElement("img");
+                                    this.image.src = this.img;
+                                } else {
+                                    this.img = sourceImages[9];
+                                    this.image = document.createElement("img");
+                                    this.image.src = this.img;
+                                }
+                            }
             
                             if (this.x != this.previousX || this.y != this.previousY) {
                                 if (turn == "white") {
@@ -926,91 +940,6 @@
             
                 return false;
             }
-            
-            /*function canBlock(king) {
-                //console.log("Checking if can block for", king.color);
-                for (let i = 0; i < pieces.length; i++) {
-                    let piece = pieces[i];
-                    if (king.color == piece.color) {
-                        if (piece.type == "pawn") {
-                            let moveY = piece.color === "black" ? piece.y + 1 : piece.y - 1;
-                            let captureMoves = [
-                                {x: piece.x - 1, y: moveY},
-                                {x: piece.x + 1, y: moveY}
-                            ];
-            
-                            for (let move of captureMoves) {
-                                let targetPiece = getPieceAtPosition(move);
-                                if (targetPiece !== "empty" && targetPiece.color !== piece.color) {
-                                    let originalX = piece.x;
-                                    let originalY = piece.y;
-                                    let targetOriginalX = targetPiece.x;
-                                    let targetOriginalY = targetPiece.y;
-            
-                                    piece.x = move.x;
-                                    piece.y = move.y;
-                                    targetPiece.x = -1; 
-                                    targetPiece.y = -1;
-            
-                                    let stillInCheck = isCheck(king, {x: king.x, y: king.y});
-            
-                                    piece.x = originalX;
-                                    piece.y = originalY;
-                                    targetPiece.x = targetOriginalX;
-                                    targetPiece.y = targetOriginalY;
-            
-                                    if (!stillInCheck) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-            
-                        if (piece.type != "empty") {
-                            //console.log("Checking moves for", piece.type);
-                            for (let x = 1; x < 9; x++) {
-                                for (let y = 1; y < 9; y++) {
-                                    kingMoving = true;
-                                    
-                                    if (piece.checkPossibleMoves({x: x, y: y})) {
-                                        //console.log("Found possible move for", piece.type, "to", x, y);
-                                        
-                                        let originalX = piece.x;
-                                        let originalY = piece.y;
-                                        piece.x = x;
-                                        piece.y = y;
-                                        let lastDeleted = null;
-            
-                                        for (let i = 0; i < pieces.length; i++) {
-                                            if (pieces[i].x == piece.x && pieces[i].y == piece.y && pieces[i] != piece) {
-                                                lastDeleted = pieces[i];
-                                                pieces[i].deleteSelf();
-                                            }
-                                        }
-            
-                                        let stillInCheck = isCheck(king, {x: king.x, y: king.y});
-                                        //console.log("After move, still in check?", stillInCheck);
-                                        
-                                        if (lastDeleted != null) {
-                                            pieces.push(lastDeleted);
-                                        }
-            
-                                        piece.x = originalX;
-                                        piece.y = originalY;
-                                        
-                                        if (!stillInCheck) {
-                                            kingMoving = false;
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                kingMoving = false;
-                return false;
-            }*/
             
             function canBlock(king) {
                 for (let piece of pieces) {
