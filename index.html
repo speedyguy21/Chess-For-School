@@ -949,7 +949,7 @@
                             if (canCaptureToBlock(piece, king)) {
                                 return true;
                             }
-                        } else if (piece.type != "king") {
+                        } else if (piece.type != "empty") {
                             console.log(`Checking ${piece.type} at ${piece.x}, ${piece.y}`);
                             if (canMoveToBlock(piece, king)) {
                                 return true;
@@ -991,12 +991,13 @@
                     for (let y = 1; y < 9; y++) {
                         if (piece.checkPossibleMoves({x: x, y: y })) {
                             console.log(`${piece.type} at ${piece.x}, ${piece.y} can move to ${x}, ${y}`);
-                        if (!isCheckAfterMove(piece, { x, y }, king)) {
-                            return true;
+                            if (!isCheckAfterMove(piece, { x, y }, king)) {
+                                return true;
+                            }
                         }
                     }
                 }
-            }
+
                 return false;
             }
             
@@ -1004,31 +1005,60 @@
                 let originalX = piece.x;
                 let originalY = piece.y;
                 let lastDeleted = null;
-            
-                piece.x = move.x;
-                piece.y = move.y;
-            
-                console.log(`Moved ${piece.type} to ${move.x}, ${move.y}`);
-                for (let i = 0; i < pieces.length; i++) {
-                    if (pieces[i].x == piece.x && pieces[i].y == piece.y && pieces[i] != piece) {
-                        lastDeleted = pieces[i];
-                        pieces[i].deleteSelf();
+
+                if (piece.type == "king") {
+                    if (checkMovesKing(piece, move)) {
+                        piece.x = move.x;
+                        piece.y = move.y;
+                    
+                        console.log(`Moved ${piece.type} to ${move.x}, ${move.y}`);
+                        for (let i = 0; i < pieces.length; i++) {
+                            if (pieces[i].x == piece.x && pieces[i].y == piece.y && pieces[i] != piece && pieces[i].color != king.color) {
+                                lastDeleted = pieces[i];
+                                pieces[i].deleteSelf();
+                            }
+                        }
+                    
+                        let stillInCheck = isCheck(king, { x: king.x, y: king.y });
+                    
+                        if (lastDeleted != null) {
+                            pieces.push(lastDeleted);
+                        }
+                    
+                        piece.x = originalX;
+                        piece.y = originalY;
+                    
+                        console.log(`Reverted ${piece.type} back to ${originalX}, ${originalY}`);
+                        console.log(`Still in check after move: ${stillInCheck}`);
+                    
+                        return stillInCheck;
                     }
+                } else {
+                    piece.x = move.x;
+                    piece.y = move.y;
+                
+                    console.log(`Moved ${piece.type} to ${move.x}, ${move.y}`);
+                    for (let i = 0; i < pieces.length; i++) {
+                        if (pieces[i].x == piece.x && pieces[i].y == piece.y && pieces[i] != piece && pieces[i].color != king.color) {
+                            lastDeleted = pieces[i];
+                            pieces[i].deleteSelf();
+                        }
+                    }
+                
+                    let stillInCheck = isCheck(king, { x: king.x, y: king.y });
+                
+                    if (lastDeleted != null) {
+                        pieces.push(lastDeleted);
+                    }
+                
+                    piece.x = originalX;
+                    piece.y = originalY;
+                
+                    console.log(`Reverted ${piece.type} back to ${originalX}, ${originalY}`);
+                    console.log(`Still in check after move: ${stillInCheck}`);
+                
+                    return stillInCheck;
                 }
-            
-                let stillInCheck = isCheck(king, { x: king.x, y: king.y });
-            
-                if (lastDeleted != null) {
-                    pieces.push(lastDeleted);
-                }
-            
-                piece.x = originalX;
-                piece.y = originalY;
-            
-                console.log(`Reverted ${piece.type} back to ${originalX}, ${originalY}`);
-               console.log(`Still in check after move: ${stillInCheck}`);
-            
-                return stillInCheck;
             }
             
             function canKingCapture(king) {
@@ -1043,7 +1073,7 @@
                     }
                 }
 
-                possibleMoves = getKingMoves(king);
+                /*possibleMoves = getKingMoves(king);
                 for (let move of possibleMoves) {
                         if (!isCheckAfterMove(king, move, king)) {
                             return true;
@@ -1051,7 +1081,8 @@
                     }
                     return false;
 
-                }
+                }*/
+            }
                 
             
             function getKingMoves(king) {
