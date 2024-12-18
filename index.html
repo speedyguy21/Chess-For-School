@@ -349,17 +349,35 @@
             
                 draw() {
                     ctx.beginPath();
+
+                    if (this.type == "king") {
+                        if (this.color == "black") {
+                            if (blackCheck) {
+                                ctx.beginPath();
+                                ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+                                ctx.fillRect(this.drawX - squareWidth/2, this.drawY - squareWidth/2, squareWidth, squareWidth);
+                                ctx.closePath();
+                            }
+                        } else {
+                            if (whiteCheck) {
+                                ctx.beginPath();
+                                ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+                                ctx.fillRect(this.drawX - squareWidth/2, this.drawY - squareWidth/2, squareWidth, squareWidth);
+                                ctx.closePath();
+                            }
+                        }
+                    }
+
                     if (this.selected) {
                         let width = squareWidth * (1 + (Math.sin(this.sizeInterval/25))*0.05);
                         let x = this.x*squareWidth - squareWidth/2;
                         let y = this.y*squareWidth - squareWidth/2;
             
                         ctx.drawImage(this.image, x - (width/2), y - (width/2), width, width);
-            
                     } else {
                         ctx.drawImage(this.image, this.drawX - squareWidth/2, this.drawY - squareWidth/2, squareWidth, squareWidth);
                     }
-            
+             
                     ctx.closePath();
                 }
             }
